@@ -72,7 +72,7 @@ inputs = [( ("General","title"),
             "\t**^\tminecraft:ID DATA\n"
             "\t***\t id:\"minecraft:ID\",Damage:DATAs\n"
             "\t***^\tid:\"minecraft:ID\",Damage:DATAs\n","label"),
-            ("When a player is /tp'ed, their rotation is determined by the sign's facing",True),
+            ("Sign facing determines [<y-rot> <x-rot>] for /tp",True),
             ("Mode:",("Absolute Coordinates","Relative Coordinates")),),
               
             (("Details","title"),
@@ -167,7 +167,7 @@ def perform(level, box, options):
 
     waypoints = []
     progress = options["Output progress to console"]
-    facing = options["When a player is /tp'ed, their rotation is determined by the sign's facing"]
+    facing = options["Sign facing determines [<y-rot> <x-rot>] for /tp"]
     relative = True if options["Mode:"] == "Relative Coordinates" else False
     
     for (chunk, _, _) in level.getChunkSlices(box):
