@@ -6,7 +6,10 @@
 from copy import deepcopy
 from pymclevel import TAG_List, TAG_Byte, TAG_Int, TAG_Compound, TAG_Short, TAG_Double, TAG_String
 import math
-displayName = "Command Block Signs+ v1.1"
+displayName = "Command Block Signs+ v2"
+
+VERSION = "v2"
+UPDATE_URL = "http://podshot.github.io/update/Head%20to%20UUID.json"
 
 block_map = {
     0:"minecraft:air",1:"minecraft:stone",2:"minecraft:grass",3:"minecraft:dirt",4:"minecraft:cobblestone",5:"minecraft:planks",6:"minecraft:sapling",
@@ -51,7 +54,8 @@ SIGN = 4
 NEXT = 5
 
 inputs = [( ("General","title"),
-            ("\n"
+            (
+            "\n"
             "Outputs:\n"
             "\t$\t0 0 0\n"
             "\t$-\t 0 0 0\n"
@@ -68,36 +72,38 @@ inputs = [( ("General","title"),
             "\t**^\tminecraft:ID DATA\n"
             "\t***\t id:\"minecraft:ID\",Damage:DATAs\n"
             "\t***^\tid:\"minecraft:ID\",Damage:DATAs\n","label"),
-            ("Player facing when teleported is determined by sign facing",True),
+            ("When a player is /tp'ed, their rotation is determined by the sign's facing",True),
             ("Mode:",("Absolute Coordinates","Relative Coordinates")),),
               
             (("Details","title"),
-            ("Place a sign at the location you want the variable to output. You can have a sign point to a location by adding or subtracting from the coordinates.\n"
+            (
+            "Sign directives:\n"
+            "\t1st line:\t<variable name>\n"
+            "\t2nd line:\t+/-x or ~ or leave blank\n"
+            "\t3rd line:\t+/-y or ~ or leave blank\n"
+            "\t4th line:\t+/-z or ~ or leave blank\n"
             "\n"
-            "Sign directives are as follows:\n"
-            "1st line: <variable name>\n"
-            "2nd line: +/-x or ~ (optional)\n"
-            "3rd line: +/-y or ~ (optional)\n"
-            "4th line: +/-z or ~ (optional)\n"
+            "Example output:\n"
+            "\t$$<variable name>\n"
             "\n"
-            "Identifiers are as follows:\n"
-            "$ | 0 0 0\n"
-            "# | 0,0,0\n"
-            "% | x:0,y:0,z:0\n"
-            "& | Pos:[0d,0d,0d]\n"
+            "Place a sign at the location you want the output to work for. <variable name> can be anything you want (eg. TEST). You can also have a sign \"point\" to a location by adding or subtracting from the coordinates using the sign's 2nd, 3rd, and 4th lines.\n"
+            "There can be 2 OR MORE signs with <variable name> "
+            "and all signs found will be taken into account:\n"
+            "\t$\tAverage\n"
+            "\t$-\t Lowest point\n"
+            "\t$+\tHighest point\n"
+            "\t$$\t Square area\n"
             "\n"
-            "To select a square area, place 2 signs with "
-            "the same variable name at opposite corners:\n"
-            "$$ | 0 0 0 0 0 0\n"
-            "## | x=0,y=0,z=0,dx=0,dy=0,dz=0\n"
+            "--------------------------------------------------"
             "\n"
-            "These output the block at the sign's location:\n"
-            "** | minecraft:lever 1\n"
-            "*** | id:\"minecraft:lever\",Damage:1s\n"
             "\n"
-            "Adding ^ will output the toggled state:\n"
-            "**^ | minecraft:lever 9\n"
-            "***^ | id:\"minecraft:lever\",Damage:9s","label")),
+            "These output the block at the sign's location \n"
+            "(or the location it is \"pointing\" to):\n"
+            "\t**\tminecraft:lever 1\n"
+            "\t***\tid:\"minecraft:lever\",Damage:1s\n"
+            "These output the block's toggled state:\n"
+            "\t**^\tminecraft:lever 9\n"
+            "\t***^\tid:\"minecraft:lever\",Damage:9s","label")),
             
             (("About","title"),
             ("This is a modified version of SethBling's Command Block Signs filter "
@@ -105,8 +111,8 @@ inputs = [( ("General","title"),
             "with work done by texelelf, Asdjke, texelelf again, and Naor. \n"
             "Thanks for all their help making this, and all other's feedback that was used to make this great mapmaking tool.\n"
             "\n"
-            "Last update: v1.1 2015/5/27\n"
-            "\n","label")),
+            "Last update: v2 2015/5/27\n","label"),
+			("Output progress to console",False),),
             ] 
 
 levers = [28,69,77,131,143]
@@ -161,7 +167,7 @@ def perform(level, box, options):
 
     waypoints = []
     progress = options["Output progress to console"]
-    facing = options["Player facing when teleported is determined by sign facing"]
+    facing = options["When a player is /tp'ed, their rotation is determined by the sign's facing"]
     relative = True if options["Mode:"] == "Relative Coordinates" else False
     
     for (chunk, _, _) in level.getChunkSlices(box):
