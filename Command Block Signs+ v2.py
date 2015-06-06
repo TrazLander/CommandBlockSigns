@@ -307,6 +307,8 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
 
             #only work with $ or $$$ (world coordinates) directives
             if "$"+waypoint in command:
+                coords = [str(sx), str(sy), str(sz)]
+                command = replaceVariables(command, "$"+waypoint, " ".join(coords), sign)
                 parts = command.split(" ")
                 partsLen = len(parts)
                 if "$" in command:
