@@ -9,7 +9,7 @@ import math
 displayName = "Command Block Signs+ v2"
 
 VERSION = "v2"
-UPDATE_URL = "http://podshot.github.io/update/Head%20to%20UUID.json"
+UPDATE_URL = ""
 
 block_map = {
     0:"minecraft:air",1:"minecraft:stone",2:"minecraft:grass",3:"minecraft:dirt",4:"minecraft:cobblestone",5:"minecraft:planks",6:"minecraft:sapling",
