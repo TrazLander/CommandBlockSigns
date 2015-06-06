@@ -108,7 +108,7 @@ inputs = [( ("General","title"),
             (("About","title"),
             ("This is a modified version of SethBling's Command Block Signs filter "
             "edited at TrazLander's request. It has gone through several iterations, "
-            "with work done by texelelf, Asdjke, texelelf again, and Naor. \n"
+            "with work done by texelelf, Asdjke, texelelf again, and Naor2013. \n"
             "Thanks for all their help making this, and all other's feedback that was used to make this great mapmaking tool.\n"
             "\n"
             "Last update: v2 2015/5/27\n","label"),
