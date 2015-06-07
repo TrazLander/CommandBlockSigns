@@ -213,7 +213,7 @@ def perform(level, box, options):
 
 
         #check to see if we've already found this sign; if so, add the sign to the existing sign at its end.  If not, add the
-        #aign to the list.
+        #sign to the list.
         if a[NAME] in known:
             if not known[a[NAME]][NEXT]:
                 known[a[NAME]][NEXT] = [deepcopy(a), ] #deepcopy, so we don't lose signs with waypoints.remove
@@ -344,7 +344,7 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
         if type(sz) == str:
             sz = z
 
-        #if popint2 isn't an empty list, then there is a second sign that needs to be considered for a ## or $$ operation
+        #if point2 isn't an empty list, then there is a second sign that needs to be considered for a ## or $$ operation
         if point2:
             #unpack the second sign
             sx2 = sy2 = sz2 = None
