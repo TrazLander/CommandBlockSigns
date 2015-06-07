@@ -288,8 +288,8 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
     global signsToRemove
     firstcommand = command
 
-    #execute, tp, and playsound use relative coordinates that center on a player; disable relative coords for these
-    if "execute" in command[:8] or "tp" in command[:3] or "playsound" in command[:10]:
+    #execute and tp use relative coordinates that center on a player; disable relative coords for these
+    if "execute" in command[:8] or "tp" in command[:3]:
         rel = False
     else:
         rel = relative
@@ -305,7 +305,7 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
         #this is a tp command, and the user wants the player to face the direction the sign is
         if facing and "tp" in command[:3]:
 
-            #only work with $ or $$$ (world coordinates) directives
+            #only work with $ directives
             if "$"+waypoint in command:
                 coords = [str(sx), str(sy), str(sz)]
                 command = replaceVariables(command, "$"+waypoint, " ".join(coords), sign)
@@ -397,16 +397,16 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
             block = level.blockAt(int(sx),int(sy),int(sz))
             data = level.blockDataAt(int(sx),int(sy),int(sz))
             if block in block_map:
-                command = replaceVariables(command, "***"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
-                command = replaceVariables(command, "**"+waypoint, str(block_map[block])+" "+str(data), sign)
+                command = replaceVariables(command, "**"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
+                command = replaceVariables(command, "*"+waypoint, str(block_map[block])+" "+str(data), sign)
                 if block in levers: #levers and directional redstone blocks
                     data = button_vals[data]
                 elif block in plates: #pressure plates
                     data ^= 1
                 elif block in tripwires: #tripwire
                     data = tripwire_vals[data]
-                command = replaceVariables(command, "***^"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
-                command = replaceVariables(command, "**^"+waypoint, str(block_map[block])+" "+str(data), sign)
+                command = replaceVariables(command, "**^"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
+                command = replaceVariables(command, "*^"+waypoint, str(block_map[block])+" "+str(data), sign)
             else:
                 print "ERROR: Unidentified block '"+str(block)+"' at",sx,sy,sz,".  Please update the block_map variable with new block IDs."
 
@@ -467,7 +467,13 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
             if oldcommand != command:
                 removeSigns(signsToMayRemove)
 
-            coords = " ".join([str(average[0]), str(average[1]), str(average[2])])
+            if rel:
+            	rx = to_number(average[0]-x)
+            	ry = to_number(average[1]-y)
+            	rz = to_number(average[2]-z)
+            	coords = "~"+"~".join([str(rx), str(ry), str(rz)])
+            else:
+                coords = " ".join([str(average[0]), str(average[1]), str(average[2])])
             oldcommand = command
             command = replaceVariables(command, "$"+waypoint, coords, sign)
             if oldcommand != command:
@@ -506,16 +512,16 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
             block = level.blockAt(int(sx),int(sy),int(sz))
             data = level.blockDataAt(int(sx),int(sy),int(sz))
             if block in block_map:
-                command = replaceVariables(command, "***"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
-                command = replaceVariables(command, "**"+waypoint, str(block_map[block])+" "+str(data), sign)
+                command = replaceVariables(command, "**"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
+                command = replaceVariables(command, "*"+waypoint, str(block_map[block])+" "+str(data), sign)
                 if block in levers: #levers and directional redstone blocks
                     data = button_vals[data]
                 elif block in plates: #pressure plates
                     data ^= 1
                 elif block in tripwires: #tripwire
                     data = tripwire_vals[data]
-                command = replaceVariables(command, "***^"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
-                command = replaceVariables(command, "**^"+waypoint, str(block_map[block])+" "+str(data), sign)
+                command = replaceVariables(command, "**^"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
+                command = replaceVariables(command, "*^"+waypoint, str(block_map[block])+" "+str(data), sign)
             else:
                 print "ERROR: Unidentified block '"+str(block)+"' at",sx,sy,sz,".  Please update the block_map variable with new block IDs."
 
@@ -534,6 +540,15 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
 
             #use the same sign for both coordinates for a $$ directive on a single sign
             command = replaceVariables(command, "$$"+waypoint, longCoords+" "+longCoords, sign)
+
+            if rel:
+                coords = "~"+" ~".join([str(rx), str(ry), str(rz)])
+            else:
+                coords = " ".join([str(sx), str(sy), str(sz)])
+
+            command = replaceVariables(command, "$+"+waypoint, coords, sign)
+
+            command = replaceVariables(command, "$-"+waypoint, coords, sign)
 
             #do $ directives ( X Y Z )
             command = replaceVariables(command, "$"+waypoint, longCoords, sign)
