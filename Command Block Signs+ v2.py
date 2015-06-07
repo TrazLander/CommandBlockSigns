@@ -302,7 +302,7 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
         if waypoint not in command:
             continue
 
-        tpIndex = command.find("tp")
+        tpIndex = command.find("tp ")
 
         #this is a tp command, and the user wants the player to face the direction the sign is
         if facing and tpIndex != -1:
