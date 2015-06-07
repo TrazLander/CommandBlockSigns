@@ -302,17 +302,13 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
         if waypoint not in command:
             continue
 
+        tpIndex = command.find("tp")
+
         #this is a tp command, and the user wants the player to face the direction the sign is
-        if facing and "tp" in command[:3]:
+        if facing and tpIndex != -1:
 
             #only work with $ directives
             if "$"+waypoint in command:
-                coords = [str(sx), str(sy), str(sz)]
-                command = replaceVariables(command, "$"+waypoint, " ".join(coords), sign)
-                parts = command.split(" ")
-                partsLen = len(parts)
-                if "$" in command:
-                    partsLen += 2
                 block = level.blockAt(sign["x"].value,sign["y"].value,sign["z"].value)
                 blockdata = level.blockDataAt(sign["x"].value,sign["y"].value,sign["z"].value)
 
@@ -323,19 +319,24 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                 #check the resulting command's parameter length, so that the Y rotation can be inserted
                 #into the 6th (5th in the string from zero) slot. Also set the X rotation to 0 if it hasn't been set
 
-                if partsLen == 5: #no rotation values
-                    parts.append(str(rotvals[blockdata]))
-                    parts.append("0")
-                elif partsLen == 6: #just the Y rotation, add 0 for X
-                    if parts[-1] != "~":
-                        parts[-1] = str(rotvals[blockdata])
-                    parts.append("0")
-                elif partsLen == 7: #both Y and X rotation values; leave X alone
-                    if parts[-2] != "~":
-                        parts[-2] = str(rotvals[blockdata])
+                before = command[:tpIndex]
+                tempCommand = command[tpIndex:]
+                parts = tempCommand.split(" ")
+                partsLen = len(parts)
+                if partsLen >= 3 and "$" in parts[2]:
+                    if partsLen >= 4 and len(parts[3]) > 0 and parts[3][0] in "~0123456789":
+                        if partsLen >= 5 and len(parts[4]) > 0 and parts[4][0] in "~0123456789":
+                            pass
+                        else:
+                            for i, c in enumerate(parts[3]):
+                                if c not in "~0123456789":
+                                    parts[3] = parts[3][:i] + " 0" + parts[i:]
+                                    break;
+                    else:
+                        parts[2] = parts[2].replace("$"+waypoint, "$"+waypoint+" "+str(rotvals[blockdata])+" 0")
 
                 #recombine the modified parts, now that the Y and X rotation for the TP command have been set
-                command = " ".join(parts)
+                command = before + " ".join(parts)
 
         if type(sx) == str:
             sx = x
