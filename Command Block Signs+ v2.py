@@ -122,7 +122,7 @@ tripwires = [132,]
 rotvals = [0,22.5,45,67.5,90,112.5,135,157.5,180,-157.5,-135,-112.5,-90,-67.5,-45,-22.5]
 wallval = {2:8,3:0,4:4,5:12}
 
-button_vals = [8,9,10,11,12,13,14,15,0,1,2,3,4,5,6,7]
+lever_vals = [8,9,10,11,12,13,14,15,0,1,2,3,4,5,6,7]
 tripwire_vals = {0:1,2:3,6:7,1:0,3:2,7:6}
 
 def to_number(s):
@@ -401,7 +401,7 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                 command = replaceVariables(command, "**"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
                 command = replaceVariables(command, "*"+waypoint, str(block_map[block])+" "+str(data), sign)
                 if block in levers: #levers and directional redstone blocks
-                    data = button_vals[data]
+                    data = lever_vals[data]
                 elif block in plates: #pressure plates
                     data ^= 1
                 elif block in tripwires: #tripwire
@@ -516,7 +516,7 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                 command = replaceVariables(command, "**"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
                 command = replaceVariables(command, "*"+waypoint, str(block_map[block])+" "+str(data), sign)
                 if block in levers: #levers and directional redstone blocks
-                    data = button_vals[data]
+                    data = lever_vals[data]
                 elif block in plates: #pressure plates
                     data ^= 1
                 elif block in tripwires: #tripwire
