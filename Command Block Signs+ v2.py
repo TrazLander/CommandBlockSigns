@@ -99,11 +99,11 @@ inputs = [( ("General","title"),
             "\n"
             "These output the block at the sign's location \n"
             "(or the location it is \"pointing\" to):\n"
-            "\t**\tminecraft:lever 1\n"
-            "\t***\tid:\"minecraft:lever\",Damage:1s\n"
+            "\t*\tminecraft:lever 1\n"
+            "\t**\tid:\"minecraft:lever\",Damage:1s\n"
             "These output the block's toggled state:\n"
-            "\t**^\tminecraft:lever 9\n"
-            "\t***^\tid:\"minecraft:lever\",Damage:9s","label")),
+            "\t*^\tminecraft:lever 9\n"
+            "\t**^\tid:\"minecraft:lever\",Damage:9s","label")),
             
             (("About","title"),
             ("This is a modified version of SethBling's Command Block Signs filter "
