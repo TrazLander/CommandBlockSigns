@@ -140,16 +140,25 @@ def fixCoords(x, y, z):
             y = int(y)
         else:
             y = float(y)
+    except:
+        pass
+
+    try:
         if int(x) == float(x)-0.5:
             x = int(x)
         else:
             x = float(x)
+    except:
+        pass
+
+    try:
         if int(z) == float(z)-0.5:
             z = int(z)
         else:
             z = float(z)
     except:
         pass
+
     finally:
         return x, y, z
 
@@ -338,11 +347,11 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                 #recombine the modified parts, now that the Y and X rotation for the TP command have been set
                 command = before + " ".join(parts)
 
-        if type(sx) == str:
+        if type(sx) == str and sx != "~":
             sx = x
-        if type(sy) == str:
+        if type(sy) == str and sy != "~":
             sy = y
-        if type(sz) == str:
+        if type(sz) == str and sz != "~":
             sz = z
 
         #if point2 isn't an empty list, then there is a second sign that needs to be considered for a ## or $$ operation
@@ -353,108 +362,144 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
 
             for p in point2:
                 _, tsx ,tsy ,tsz, sign2, _ = p
-                if tsx == None or type(tsx) == str:
+                if tsx == None or (type(tsx) == str and tsx != "~"):
                     tsx = x
-                if tsy == None or type(tsy) == str:
+                if tsy == None or (type(tsy) == str and tsy != "~"):
                   tsy = y
-                if tsz == None or type(tsz) == str:
+                if tsz == None or (type(tsz) == str and tsz != "~"):
                    tsz = z
 
                 if sx2 is None:
-                    if sx > tsx:
+                    if sx == "~" or tsx == "~":
+                        sx = sx2 = "~"
+                    elif sx > tsx:
                         sx, sx2 = tsx, sx
                     else:
                         sx2 = tsx
                 if sy2 is None:
-                    if sy > tsy:
+                    if sy == "~" or tsy == "~":
+                        sy = sy2 = "~"
+                    elif sy > tsy:
                         sy, sy2 = tsy, sy
                     else:
                         sy2 = tsy
                 if sz2 is None:
-                    if sz > tsz:
+                    if sz == "~" or tsz == "~":
+                        sz = sz2 = "~"
+                    elif sz > tsz:
                         sz, sz2 = tsz, sz
                     else:
                         sz2 = tsz
 
-                if tsx > sx2:
+                if sx2 != "~" and tsx != "~" and tsx > sx2:
                     sx2 = tsx
-                if tsy > sy2:
+                if sy2 != "~" and tsy != "~" and tsy > sy2:
                     sy2 = tsy
-                if tsz > sz2:
+                if sz2 != "~" and tsz != "~" and tsz > sz2:
                     sz2 = tsz
 
-                if tsx < sx:
+                if sx != "~" and tsx != "~" and tsx < sx:
                     sx = tsx
-                if tsy < sy:
+                if sy != "~" and tsy != "~" and tsy < sy:
                     sy = tsy
-                if tsz < sz:
+                if sz != "~" and tsz != "~" and tsz < sz:
                     sz = tsz
 
                 signsToMayRemove.append(sign2)
 
-            average = float(sx)+float(sx2)+1, float(sy)+float(sy2), float(sz)+float(sz2)+1
-            average = fixCoords(average[0]/2, average[1]/2, average[2]/2)
-            
-            block = level.blockAt(int(sx),int(sy),int(sz))
-            data = level.blockDataAt(int(sx),int(sy),int(sz))
-            if block in block_map:
-                if block in levers and data>=8 and data<=15:
-                    positive = False
-                elif block in plates and data==0:
-                    positive = False
-                elif block in tripwires and data>=0 and data<=14 and data%2==0:
-                    positive = False
-                else:
-                    positive = True
-
-                if positive:
-                    command = replaceVariables(command, "**+"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
-                    command = replaceVariables(command, "*+"+waypoint, str(block_map[block])+" "+str(data), sign)
-                    if block in levers: #levers and directional redstone blocks
-                        tempData = lever_vals[data]
-                    elif block in plates: #pressure plates
-                        tempData ^= 1
-                    elif block in tripwires: #tripwire
-                        tempData = tripwire_vals[data]
-                    else:
-                        tempData = data
-                    command = replaceVariables(command, "**-"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(tempData)+"s", sign)
-                    command = replaceVariables(command, "*-"+waypoint, str(block_map[block])+" "+str(tempData), sign)
-                else:
-                    command = replaceVariables(command, "**-"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
-                    command = replaceVariables(command, "*-"+waypoint, str(block_map[block])+" "+str(data), sign)
-                    if block in levers: #levers and directional redstone blocks
-                        tempData = lever_vals[data]
-                    elif block in plates: #pressure plates
-                        tempData ^= 1
-                    elif block in tripwires: #tripwire
-                        tempData = tripwire_vals[data]
-                    else:
-                        tempData = data
-                    command = replaceVariables(command, "**+"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(tempData)+"s", sign)
-                    command = replaceVariables(command, "*+"+waypoint, str(block_map[block])+" "+str(tempData), sign)
-
-                command = replaceVariables(command, "**"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
-                command = replaceVariables(command, "*"+waypoint, str(block_map[block])+" "+str(data), sign)
-                if block in levers: #levers and directional redstone blocks
-                    data = lever_vals[data]
-                elif block in plates: #pressure plates
-                    data ^= 1
-                elif block in tripwires: #tripwire
-                    data = tripwire_vals[data]
-                command = replaceVariables(command, "**^"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
-                command = replaceVariables(command, "*^"+waypoint, str(block_map[block])+" "+str(data), sign)
+            average = []
+            if sx == "~" or sx2 == "~":
+                average.append("~")
             else:
-                print "ERROR: Unidentified block '"+str(block)+"' at",sx,sy,sz,".  Please update the block_map variable with new block IDs."
+                average.append((float(sx)+float(sx2)+1)/2)
+            if sy == "~" or sy2 == "~":
+                average.append("~")
+            else:
+                average.append((float(sy)+float(sy2))/2)
+            if sz == "~" or sz2 == "~":
+                average.append("~")
+            else:
+                average.append((float(sz)+float(sz2)+1)/2)
+            average = fixCoords(average[0], average[1], average[2])
+            
+            if sx == "~" or sx2 == "~" or sy == "~" or sy2 == "~" or sz == "~" or sz2 == "~":
+                telda = True
+            else:
+                telda = False
+            if not telda:
+                block = level.blockAt(int(sx),int(sy),int(sz))
+                data = level.blockDataAt(int(sx),int(sy),int(sz))
+                if block in block_map:
+                    if block in levers and data>=8 and data<=15:
+                        positive = False
+                    elif block in plates and data==0:
+                        positive = False
+                    elif block in tripwires and data>=0 and data<=14 and data%2==0:
+                        positive = False
+                    else:
+                        positive = True
+
+                    if positive:
+                        command = replaceVariables(command, "**+"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
+                        command = replaceVariables(command, "*+"+waypoint, str(block_map[block])+" "+str(data), sign)
+                        if block in levers: #levers and directional redstone blocks
+                            tempData = lever_vals[data]
+                        elif block in plates: #pressure plates
+                            tempData ^= 1
+                        elif block in tripwires: #tripwire
+                            tempData = tripwire_vals[data]
+                        else:
+                            tempData = data
+                        command = replaceVariables(command, "**-"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(tempData)+"s", sign)
+                        command = replaceVariables(command, "*-"+waypoint, str(block_map[block])+" "+str(tempData), sign)
+                    else:
+                        command = replaceVariables(command, "**-"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
+                        command = replaceVariables(command, "*-"+waypoint, str(block_map[block])+" "+str(data), sign)
+                        if block in levers: #levers and directional redstone blocks
+                            tempData = lever_vals[data]
+                        elif block in plates: #pressure plates
+                            tempData ^= 1
+                        elif block in tripwires: #tripwire
+                            tempData = tripwire_vals[data]
+                        else:
+                            tempData = data
+                        command = replaceVariables(command, "**+"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(tempData)+"s", sign)
+                        command = replaceVariables(command, "*+"+waypoint, str(block_map[block])+" "+str(tempData), sign)
+
+                    command = replaceVariables(command, "**"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
+                    command = replaceVariables(command, "*"+waypoint, str(block_map[block])+" "+str(data), sign)
+                    if block in levers: #levers and directional redstone blocks
+                        data = lever_vals[data]
+                    elif block in plates: #pressure plates
+                        data ^= 1
+                    elif block in tripwires: #tripwire
+                        data = tripwire_vals[data]
+                    command = replaceVariables(command, "**^"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
+                    command = replaceVariables(command, "*^"+waypoint, str(block_map[block])+" "+str(data), sign)
+                else:
+                    print "ERROR: Unidentified block '"+str(block)+"' at",sx,sy,sz,".  Please update the block_map variable with new block IDs."
 
             #handle particle commands, which use an x,y,z center point with a box width
             if "particle" in command[:9]:
-                xWidth = float(sx2-sx)/4.0
-                yWidth = float(sy2-sy)/4.0
-                zWidth = float(sz2-sz)/4.0
-                xCenter = (math.ceil(float((sx2+0.5)-(sx+0.5))/2.0))+sx
-                yCenter = (math.ceil(float(sy2-sy)/2.0))+sy
-                zCenter = (math.ceil(float((sz2+0.5)-(sz+0.5))/2.0))+sz
+                if sx == "~" or sx2 == "~":
+                    xWidth = 0
+                    xCenter = "~"
+                else:
+                    xWidth = float(sx2-sx)/4.0
+                    xCenter = (math.ceil(float((sx2+0.5)-(sx+0.5))/2.0))+sx
+                if sy == "~" or sy2 == "~":
+                    yWidth = 0
+                    yCenter = "~"
+                else:
+                    yWidth = float(sy2-sy)/4.0
+                    yCenter = (math.ceil(float(sy2-sy)/2.0))+sy
+                if sz == "~" or sz2 == "~":
+                    zWidth = 0
+                    zCenter = "~"
+                else:
+                    zWidth = float(sz2-sz)/4.0
+                    zCenter = (math.ceil(float((sz2+0.5)-(sz+0.5))/2.0))+sz                
+
                 particleCoords = str(xCenter)+" "+str(yCenter)+" "+str(zCenter)+" "+str(xWidth)+" "+str(yWidth)+" "+str(zWidth)
 
                 oldcommand = command
@@ -466,13 +511,25 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
 
             #calculate relative coordinates
             if rel:
-                rx = to_number(sx-x)
-                ry = to_number(sy-y)
-                rz = to_number(sz-z)
-                rx2 = to_number(sx2-x)
-                ry2 = to_number(sy2-y)
-                rz2 = to_number(sz2-z)
-                longCoords = "~"+" ~".join([str(rx), str(ry), str(rz), str(rx2), str(ry2), str(rz2)])
+                if sx == "~" or sx2 == "~":
+                    rx = "~"
+                    rx2 = "~"
+                else:
+                    rx = "~" + str(to_number(sx-x))
+                    rx2 = "~" + str(to_number(sx2-x))
+                if sy == "~" or sy2 == "~":
+                    ry = "~"
+                    ry2 = "~"
+                else:
+                    ry = "~" + str(to_number(sy-y))
+                    ry2 = "~" + str(to_number(sy2-y))
+                if sz == "~" or sz2 == "~":
+                    rz = "~"
+                    rz2 = "~"
+                else:
+                    rz = "~" + str(to_number(sz-z))
+                    rz2 = "~" + str(to_number(sz2-z))
+                longCoords = " ".join([rx, ry, rz, rx2, ry2, rz2])
             else:
                 longCoords = " ".join([str(sx), str(sy), str(sz), str(sx2), str(sy2), str(sz2)])
             oldcommand = command
@@ -483,7 +540,7 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                 removeSigns(signsToMayRemove)
 
             if rel:
-                coords = "~"+" ~".join([str(rx2), str(ry2), str(rz2)])
+                coords = " ".join([rx2, ry2, rz2])
             else:
                 coords = " ".join([str(sx2), str(sy2), str(sz2)])
             oldcommand = command
@@ -494,7 +551,7 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                 removeSigns(signsToMayRemove)
 
             if rel:
-                coords = "~"+" ~".join([str(rx), str(ry), str(rz)])
+                coords = " ".join([rx, ry, rz])
             else:
                 coords = " ".join([str(sx), str(sy), str(sz)])
             oldcommand = command
@@ -505,10 +562,19 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                 removeSigns(signsToMayRemove)
 
             if rel:
-                rx = to_number(average[0]-x)
-                ry = to_number(average[1]-y)
-                rz = to_number(average[2]-z)
-                coords = "~"+"~".join([str(rx), str(ry), str(rz)])
+                if average[0] == "~":
+                    rx = "~"
+                else:
+                    rx = "~" + str(to_number(average[0]-x))
+                if average[1] == "~":
+                    ry = "~"
+                else:
+                    ry = "~" + str(to_number(average[1]-y))
+                if average[2] == "~":
+                    rz = "~"
+                else:
+                    rz = "~" + str(to_number(average[2]-z))
+                coords = " ".join([rx, ry, rz])
             else:
                 coords = " ".join([str(average[0]), str(average[1]), str(average[2])])
             oldcommand = command
@@ -517,28 +583,29 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                 removeSigns(signsToMayRemove)
 
             oldcommand = command
-            selCoords = "x="+str(int(sx))+",y="+str(int(sy))+",z="+str(int(sz))+",dx="+str(int(sx2)-int(sx))+",dy="+str(int(sy2)-int(sy))+",dz="+str(int(sz2)-int(sz))
-            command = replaceVariables(command, "##"+waypoint, selCoords, sign)
-            if oldcommand != command:
-                removeSigns(signsToMayRemove)
+            if not telda:
+                selCoords = "x="+str(int(sx))+",y="+str(int(sy))+",z="+str(int(sz))+",dx="+str(int(sx2)-int(sx))+",dy="+str(int(sy2)-int(sy))+",dz="+str(int(sz2)-int(sz))
+                command = replaceVariables(command, "##"+waypoint, selCoords, sign)
+                if oldcommand != command:
+                    removeSigns(signsToMayRemove)
 
-            oldcommand = command
-            shortCoords = ",".join([str(int(average[0])), str(int(average[1])), str(int(average[2]))])
-            command = replaceVariables(command, "#"+waypoint, shortCoords, sign)
-            if oldcommand != command:
-                removeSigns(signsToMayRemove)
+                oldcommand = command
+                shortCoords = ",".join([str(int(average[0])), str(int(average[1])), str(int(average[2]))])
+                command = replaceVariables(command, "#"+waypoint, shortCoords, sign)
+                if oldcommand != command:
+                    removeSigns(signsToMayRemove)
 
-            oldcommand = command
-            tagCoords = "x:"+str(int(average[0]))+",y:"+str(int(average[1]))+",z:"+str(int(average[2]))
-            command = replaceVariables(command, "%"+waypoint, tagCoords, sign)
-            if oldcommand != command:
-                removeSigns(signsToMayRemove)
+                oldcommand = command
+                tagCoords = "x:"+str(int(average[0]))+",y:"+str(int(average[1]))+",z:"+str(int(average[2]))
+                command = replaceVariables(command, "%"+waypoint, tagCoords, sign)
+                if oldcommand != command:
+                    removeSigns(signsToMayRemove)
 
-            oldcommand = command
-            posCoords = "Pos:["+str(average[0]+0.5)+"d,"+str(average[1])+"d,"+str(average[2]+0.5)+"d]"
-            command = replaceVariables(command, "&"+waypoint, posCoords, sign)
-            if oldcommand != command:
-                removeSigns(signsToMayRemove)
+                oldcommand = command
+                posCoords = "Pos:["+str(average[0]+0.5)+"d,"+str(average[1])+"d,"+str(average[2]+0.5)+"d]"
+                command = replaceVariables(command, "&"+waypoint, posCoords, sign)
+                if oldcommand != command:
+                    removeSigns(signsToMayRemove)
 
         #no second sign is associated with this one, continue on
         else:
@@ -546,66 +613,81 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
             if "spreadplayers" in command[:14]:
                 command = replaceVariables(command, "$"+waypoint, " ".join([str(sx), str(sz)]), sign)
             
-            block = level.blockAt(int(sx),int(sy),int(sz))
-            data = level.blockDataAt(int(sx),int(sy),int(sz))
-            if block in block_map:
-                if block in levers and data>=8 and data<=15:
-                    positive = False
-                elif block in plates and data==0:
-                    positive = False
-                elif block in tripwires and data>=0 and data<=14 and data%2==0:
-                    positive = False
-                else:
-                    positive = True
-
-                if positive:
-                    command = replaceVariables(command, "**+"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
-                    command = replaceVariables(command, "*+"+waypoint, str(block_map[block])+" "+str(data), sign)
-                    if block in levers: #levers and directional redstone blocks
-                        tempData = lever_vals[data]
-                    elif block in plates: #pressure plates
-                        tempData ^= 1
-                    elif block in tripwires: #tripwire
-                        tempData = tripwire_vals[data]
-                    else:
-                        tempData = data
-                    command = replaceVariables(command, "**-"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(tempData)+"s", sign)
-                    command = replaceVariables(command, "*-"+waypoint, str(block_map[block])+" "+str(tempData), sign)
-                else:
-                    command = replaceVariables(command, "**-"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
-                    command = replaceVariables(command, "*-"+waypoint, str(block_map[block])+" "+str(data), sign)
-                    if block in levers: #levers and directional redstone blocks
-                        tempData = lever_vals[data]
-                    elif block in plates: #pressure plates
-                        tempData ^= 1
-                    elif block in tripwires: #tripwire
-                        tempData = tripwire_vals[data]
-                    else:
-                        tempData = data
-                    command = replaceVariables(command, "**+"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(tempData)+"s", sign)
-                    command = replaceVariables(command, "*+"+waypoint, str(block_map[block])+" "+str(tempData), sign)
-                command = replaceVariables(command, "**"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
-                command = replaceVariables(command, "*"+waypoint, str(block_map[block])+" "+str(data), sign)
-                if block in levers: #levers and directional redstone blocks
-                    data = lever_vals[data]
-                elif block in plates: #pressure plates
-                    data ^= 1
-                elif block in tripwires: #tripwire
-                    data = tripwire_vals[data]
-                command = replaceVariables(command, "**^"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
-                command = replaceVariables(command, "*^"+waypoint, str(block_map[block])+" "+str(data), sign)
+            if sx == "~" or sy == "~" or sz == "~":
+                telda = True
             else:
-                print "ERROR: Unidentified block '"+str(block)+"' at",sx,sy,sz,".  Please update the block_map variable with new block IDs."
+                telda = False
+
+            if not telda:
+                block = level.blockAt(int(sx),int(sy),int(sz))
+                data = level.blockDataAt(int(sx),int(sy),int(sz))
+                if block in block_map:
+                    if block in levers and data>=8 and data<=15:
+                        positive = False
+                    elif block in plates and data==0:
+                        positive = False
+                    elif block in tripwires and data>=0 and data<=14 and data%2==0:
+                        positive = False
+                    else:
+                        positive = True
+
+                    if positive:
+                        command = replaceVariables(command, "**+"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
+                        command = replaceVariables(command, "*+"+waypoint, str(block_map[block])+" "+str(data), sign)
+                        if block in levers: #levers and directional redstone blocks
+                            tempData = lever_vals[data]
+                        elif block in plates: #pressure plates
+                            tempData ^= 1
+                        elif block in tripwires: #tripwire
+                            tempData = tripwire_vals[data]
+                        else:
+                            tempData = data
+                        command = replaceVariables(command, "**-"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(tempData)+"s", sign)
+                        command = replaceVariables(command, "*-"+waypoint, str(block_map[block])+" "+str(tempData), sign)
+                    else:
+                        command = replaceVariables(command, "**-"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
+                        command = replaceVariables(command, "*-"+waypoint, str(block_map[block])+" "+str(data), sign)
+                        if block in levers: #levers and directional redstone blocks
+                            tempData = lever_vals[data]
+                        elif block in plates: #pressure plates
+                            tempData ^= 1
+                        elif block in tripwires: #tripwire
+                            tempData = tripwire_vals[data]
+                        else:
+                            tempData = data
+                        command = replaceVariables(command, "**+"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(tempData)+"s", sign)
+                        command = replaceVariables(command, "*+"+waypoint, str(block_map[block])+" "+str(tempData), sign)
+                    command = replaceVariables(command, "**"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
+                    command = replaceVariables(command, "*"+waypoint, str(block_map[block])+" "+str(data), sign)
+                    if block in levers: #levers and directional redstone blocks
+                        data = lever_vals[data]
+                    elif block in plates: #pressure plates
+                        data ^= 1
+                    elif block in tripwires: #tripwire
+                        data = tripwire_vals[data]
+                    command = replaceVariables(command, "**^"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
+                    command = replaceVariables(command, "*^"+waypoint, str(block_map[block])+" "+str(data), sign)
+                else:
+                    print "ERROR: Unidentified block '"+str(block)+"' at",sx,sy,sz,".  Please update the block_map variable with new block IDs."
 
             #handy list for building coordinate strings using join
             coords = [str(sx), str(sy), str(sz)]
 
             #calculate relative coordinates
             if rel:
-                rx = to_number(sx-x)
-                ry = to_number(sy-y)
-                rz = to_number(sz-z)
-                longCoords = "~"+" ~".join([str(rx), str(ry), str(rz)])
+                if sx == "~":
+                    rx = "~"
+                else:
+                    rx = "~" + str(to_number(sx-x))
+                if sy == "~":
+                    ry = "~"
+                else:
+                    ry = "~" + str(to_number(sy-y))
+                if sz == "~":
+                    rz = "~"
+                else:
+                    rz = "~" + str(to_number(sz-z))
+                longCoords = " ".join([rx, ry, rz])
             #or don't, whatever
             else:
                 longCoords = " ".join(coords)
@@ -614,9 +696,9 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
             command = replaceVariables(command, "$$"+waypoint, longCoords+" "+longCoords, sign)
 
             if rel:
-                coords = "~"+" ~".join([str(rx), str(ry), str(rz)])
+                coords = " ".join([rx, ry, rz])
             else:
-                coords = " ".join([str(sx), str(sy), str(sz)])
+                coords = " ".join(coords)
 
             command = replaceVariables(command, "$+"+waypoint, coords, sign)
 
@@ -625,21 +707,22 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
             #do $ directives ( X Y Z )
             command = replaceVariables(command, "$"+waypoint, longCoords, sign)
             
-            #use the same, zeroed coordinates for a $$ directive on a single sign
-            shortCoords = "x="+str(int(sx))+",y="+str(int(sy))+",z="+str(int(sz))+",dx=0,dy=0,dz=0"
-            command = replaceVariables(command, "##"+waypoint, shortCoords, sign)
+            if not telda:
+                #use the same, zeroed coordinates for a $$ directive on a single sign
+                shortCoords = "x="+str(int(sx))+",y="+str(int(sy))+",z="+str(int(sz))+",dx=0,dy=0,dz=0"
+                command = replaceVariables(command, "##"+waypoint, shortCoords, sign)
 
-            #do # directives ( X,Y,Z )
-            shortCoords = ",".join([str(int(sx)), str(int(sy)), str(int(sz))])
-            command = replaceVariables(command, "#"+waypoint, shortCoords, sign)
+                #do # directives ( X,Y,Z )
+                shortCoords = ",".join([str(int(sx)), str(int(sy)), str(int(sz))])
+                command = replaceVariables(command, "#"+waypoint, shortCoords, sign)
 
-            #do % directives ( x:X,y:Y,z:Z )
-            tagCoords = "x:"+str(int(sx))+",y:"+str(int(sy))+",z:"+str(int(sz))
-            command = replaceVariables(command, "%"+waypoint, tagCoords, sign)
+                #do % directives ( x:X,y:Y,z:Z )
+                tagCoords = "x:"+str(int(sx))+",y:"+str(int(sy))+",z:"+str(int(sz))
+                command = replaceVariables(command, "%"+waypoint, tagCoords, sign)
 
-            #do & directives ( Pos:[Xf,Yf,Zf] )
-            posCoords = "Pos:["+str(sx+0.5)+"d,"+str(sy)+"d,"+str(sz+0.5)+"d]"
-            command = replaceVariables(command, "&"+waypoint, posCoords, sign)
+                #do & directives ( Pos:[Xf,Yf,Zf] )
+                posCoords = "Pos:["+str(sx+0.5)+"d,"+str(sy)+"d,"+str(sz+0.5)+"d]"
+                command = replaceVariables(command, "&"+waypoint, posCoords, sign)
     if firstcommand != command:
         if progress:
             print "modifications made."
