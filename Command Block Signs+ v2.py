@@ -112,7 +112,7 @@ inputs = [( ("General","title"),
             "Thanks for all their help making this, and all other's feedback that was used to make this great mapmaking tool.\n"
             "\n"
             "Last update: v2 2015/5/27\n","label"),
-			("Output progress to console",False),),
+            ("Output progress to console",False),),
             ] 
 
 levers = [28,69,77,131,143]
@@ -398,6 +398,42 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
             block = level.blockAt(int(sx),int(sy),int(sz))
             data = level.blockDataAt(int(sx),int(sy),int(sz))
             if block in block_map:
+                if block in levers and data>=8 and data<=15:
+                    positive = False
+                elif block in plates and data==0:
+                    positive = False
+                elif block in tripwires and data>=0 and data<=14 and data%2==0:
+                    positive = False
+                else:
+                    positive = True
+
+                if positive:
+                    command = replaceVariables(command, "**+"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
+                    command = replaceVariables(command, "*+"+waypoint, str(block_map[block])+" "+str(data), sign)
+                    if block in levers: #levers and directional redstone blocks
+                        tempData = lever_vals[data]
+                    elif block in plates: #pressure plates
+                        tempData ^= 1
+                    elif block in tripwires: #tripwire
+                        tempData = tripwire_vals[data]
+                    else:
+                        tempData = data
+                    command = replaceVariables(command, "**-"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(tempData)+"s", sign)
+                    command = replaceVariables(command, "*-"+waypoint, str(block_map[block])+" "+str(tempData), sign)
+                else:
+                    command = replaceVariables(command, "**-"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
+                    command = replaceVariables(command, "*-"+waypoint, str(block_map[block])+" "+str(data), sign)
+                    if block in levers: #levers and directional redstone blocks
+                        tempData = lever_vals[data]
+                    elif block in plates: #pressure plates
+                        tempData ^= 1
+                    elif block in tripwires: #tripwire
+                        tempData = tripwire_vals[data]
+                    else:
+                        tempData = data
+                    command = replaceVariables(command, "**+"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(tempData)+"s", sign)
+                    command = replaceVariables(command, "*+"+waypoint, str(block_map[block])+" "+str(tempData), sign)
+
                 command = replaceVariables(command, "**"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
                 command = replaceVariables(command, "*"+waypoint, str(block_map[block])+" "+str(data), sign)
                 if block in levers: #levers and directional redstone blocks
@@ -469,10 +505,10 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                 removeSigns(signsToMayRemove)
 
             if rel:
-            	rx = to_number(average[0]-x)
-            	ry = to_number(average[1]-y)
-            	rz = to_number(average[2]-z)
-            	coords = "~"+"~".join([str(rx), str(ry), str(rz)])
+                rx = to_number(average[0]-x)
+                ry = to_number(average[1]-y)
+                rz = to_number(average[2]-z)
+                coords = "~"+"~".join([str(rx), str(ry), str(rz)])
             else:
                 coords = " ".join([str(average[0]), str(average[1]), str(average[2])])
             oldcommand = command
@@ -513,6 +549,41 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
             block = level.blockAt(int(sx),int(sy),int(sz))
             data = level.blockDataAt(int(sx),int(sy),int(sz))
             if block in block_map:
+                if block in levers and data>=8 and data<=15:
+                    positive = False
+                elif block in plates and data==0:
+                    positive = False
+                elif block in tripwires and data>=0 and data<=14 and data%2==0:
+                    positive = False
+                else:
+                    positive = True
+
+                if positive:
+                    command = replaceVariables(command, "**+"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
+                    command = replaceVariables(command, "*+"+waypoint, str(block_map[block])+" "+str(data), sign)
+                    if block in levers: #levers and directional redstone blocks
+                        tempData = lever_vals[data]
+                    elif block in plates: #pressure plates
+                        tempData ^= 1
+                    elif block in tripwires: #tripwire
+                        tempData = tripwire_vals[data]
+                    else:
+                        tempData = data
+                    command = replaceVariables(command, "**-"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(tempData)+"s", sign)
+                    command = replaceVariables(command, "*-"+waypoint, str(block_map[block])+" "+str(tempData), sign)
+                else:
+                    command = replaceVariables(command, "**-"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
+                    command = replaceVariables(command, "*-"+waypoint, str(block_map[block])+" "+str(data), sign)
+                    if block in levers: #levers and directional redstone blocks
+                        tempData = lever_vals[data]
+                    elif block in plates: #pressure plates
+                        tempData ^= 1
+                    elif block in tripwires: #tripwire
+                        tempData = tripwire_vals[data]
+                    else:
+                        tempData = data
+                    command = replaceVariables(command, "**+"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(tempData)+"s", sign)
+                    command = replaceVariables(command, "*+"+waypoint, str(block_map[block])+" "+str(tempData), sign)
                 command = replaceVariables(command, "**"+waypoint, "id:\""+str(block_map[block])+"\",Damage:"+str(data)+"s", sign)
                 command = replaceVariables(command, "*"+waypoint, str(block_map[block])+" "+str(data), sign)
                 if block in levers: #levers and directional redstone blocks
