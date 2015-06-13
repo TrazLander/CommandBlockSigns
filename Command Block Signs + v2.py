@@ -445,7 +445,7 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                         if block in levers: #levers and directional redstone blocks
                             tempData = lever_vals[data]
                         elif block in plates: #pressure plates
-                            tempData ^= 1
+                            tempData = data ^ 1
                         elif block in tripwires: #tripwire
                             tempData = tripwire_vals[data]
                         else:
@@ -458,7 +458,7 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                         if block in levers: #levers and directional redstone blocks
                             tempData = lever_vals[data]
                         elif block in plates: #pressure plates
-                            tempData ^= 1
+                            tempData = data ^ 1
                         elif block in tripwires: #tripwire
                             tempData = tripwire_vals[data]
                         else:
@@ -637,7 +637,7 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                         if block in levers: #levers and directional redstone blocks
                             tempData = lever_vals[data]
                         elif block in plates: #pressure plates
-                            tempData ^= 1
+                            tempData = data ^ 1
                         elif block in tripwires: #tripwire
                             tempData = tripwire_vals[data]
                         else:
@@ -650,7 +650,7 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                         if block in levers: #levers and directional redstone blocks
                             tempData = lever_vals[data]
                         elif block in plates: #pressure plates
-                            tempData ^= 1
+                            tempData = data ^ 1
                         elif block in tripwires: #tripwire
                             tempData = tripwire_vals[data]
                         else:
