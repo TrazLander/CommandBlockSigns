@@ -6,7 +6,7 @@
 from copy import deepcopy
 from pymclevel import TAG_List, TAG_Byte, TAG_Int, TAG_Compound, TAG_Short, TAG_Double, TAG_String
 import math
-displayName = "Command Block Signs+ v2"
+displayName = "Command Block Signs + v2"
 
 VERSION = "v2"
 UPDATE_URL = ""
