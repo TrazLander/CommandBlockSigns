@@ -430,7 +430,7 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                 block = level.blockAt(int(sx),int(sy),int(sz))
                 data = level.blockDataAt(int(sx),int(sy),int(sz))
                 if block in block_map:
-                    if block in levers and data>=8 and data<=15:
+                    if block in levers and data>=0 and data<=7:
                         positive = False
                     elif block in plates and data==0:
                         positive = False
@@ -622,7 +622,7 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                 block = level.blockAt(int(sx),int(sy),int(sz))
                 data = level.blockDataAt(int(sx),int(sy),int(sz))
                 if block in block_map:
-                    if block in levers and data>=8 and data<=15:
+                    if block in levers and data>=0 and data<=7:
                         positive = False
                     elif block in plates and data==0:
                         positive = False
