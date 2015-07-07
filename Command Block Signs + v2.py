@@ -58,8 +58,6 @@ inputs = [( ("General","title"),
             "\n"
             "Outputs:\n"
             "\t$\t0 0 0\n"
-            "\t$-\t 0 0 0\n"
-            "\t$+\t0 0 0\n"
             "\t$$\t 0 0 0 0 0 0\n"
             "\n"
             "\t#\t 0,0,0\n"
@@ -69,48 +67,58 @@ inputs = [( ("General","title"),
             "\t&\t Pos:[0d,0d,0d]\n"
             "\n"
             "\t*\t minecraft:ID DATA\n"
-            "\t*^\tminecraft:ID DATA\n"
             "\t**\t id:\"minecraft:ID\",Damage:DATAs\n"
-            "\t**^\tid:\"minecraft:ID\",Damage:DATAs\n","label"),
+            ,"label"),
             ("Sign facing determines [<y-rot> <x-rot>] for /tp",True),
-            ("Mode:",("Absolute Coordinates","Relative Coordinates")),),
+            ("Mode:",("Absolute Coordinates","Relative Coordinates")),
+            ("","label"),
+            ),
               
             (("Details","title"),
             (
-            "Sign directives:\n"
-            "\t1st line:\t<variable name>\n"
-            "\t2nd line:\t+/-x or ~ or leave blank\n"
-            "\t3rd line:\t+/-y or ~ or leave blank\n"
-            "\t4th line:\t+/-z or ~ or leave blank\n"
+            "Output:\n"
+            "\t$<VARIABLE>\n"
             "\n"
-            "Example output:\n"
-            "\t$$<variable name>\n"
+            "Sign format:\n"
+            "\t1st line:\t<VARIABLE>\n"
+            "\t2nd line:\t+/-x or ~ [optional]\n"
+            "\t3rd line:\t+/-y or ~ [optional]\n"
+            "\t4th line:\t+/-z or ~ [optional]\n"
             "\n"
-            "Place a sign at the location you want the output to work for. <variable name> can be anything you want (eg. TEST). You can also have a sign \"point\" to a location by adding or subtracting from the coordinates using the sign's 2nd, 3rd, and 4th lines.\n"
-            "There can be 2 OR MORE signs with <variable name> "
-            "and all signs found will be taken into account:\n"
+            "-----------------------\n"
+            "\n"
+            "Adding + or - (for $):\n"
             "\t$\tAverage\n"
             "\t$-\t Lowest point\n"
             "\t$+\tHighest point\n"
             "\t$$\t Square area\n"
             "\n"
-            "--------------------------------------------------"
-            "\n"
-            "\n"
-            "These output the block at the sign's location \n"
-            "(or the location it is \"pointing\" to):\n"
-            "\t*\tminecraft:lever 1\n"
-            "\t**\tid:\"minecraft:lever\",Damage:1s\n"
-            "These output the block's toggled state:\n"
-            "\t*^\tminecraft:lever 9\n"
-            "\t**^\tid:\"minecraft:lever\",Damage:9s","label")),
+            "Adding + or - (for *, **):\n"
+            "\t*\t Block\n"
+            "\t*+\tBlock's powered state\n"
+            "\t*-\t  Block's unpowered state\n"
+            "\t*^\t Block's toggled state\n"
+            "","label")),
             
             (("About","title"),
-            ("This is a modified version of SethBling's Command Block Signs filter "
+            (
+            "To Use:\n"
+            "Place a sign at the location you want the output to work for."
+            "<VARIABLE> can be anything you want (eg. TEST)."
+            "You can also have a sign \"point\" to a location by adding or subtracting "
+            "from the coordinates using the sign's 2nd, 3rd, and/or 4th lines.\n"
+            "\n"
+            "There can be 2 OR MORE signs with <VARIABLE> "
+            "and all signs found will be taken into account.\n"
+            "\n"
+            "-----------------------\n"
+            "\n"
+            "This is a modified version of SethBling's Command Block Signs filter "
             "edited at TrazLander's request. It has gone through several iterations, "
             "with work done by texelelf, Asdjke, texelelf again, and Naor2013. \n"
-            "Thanks for all their help making this, and all other's feedback that was used to make this great mapmaking tool.\n"
-            "\n","label"),
+            "Thanks for all their help making this, and all other's feedback in creating this.\n"
+            "\n"
+            "","label"),
             ("Output progress to console",False),),
             ] 
 
