@@ -68,10 +68,10 @@ inputs = [( ("General","title"),
             "\t%\tx:0,y:0,z:0\n"
             "\t&\t Pos:[0d,0d,0d]\n"
             "\n"
-            "\t**\t minecraft:ID DATA\n"
-            "\t**^\tminecraft:ID DATA\n"
-            "\t***\t id:\"minecraft:ID\",Damage:DATAs\n"
-            "\t***^\tid:\"minecraft:ID\",Damage:DATAs\n","label"),
+            "\t*\t minecraft:ID DATA\n"
+            "\t*^\tminecraft:ID DATA\n"
+            "\t**\t id:\"minecraft:ID\",Damage:DATAs\n"
+            "\t**^\tid:\"minecraft:ID\",Damage:DATAs\n","label"),
             ("Sign facing determines [<y-rot> <x-rot>] for /tp",True),
             ("Mode:",("Absolute Coordinates","Relative Coordinates")),),
               
