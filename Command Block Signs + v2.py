@@ -68,9 +68,9 @@ inputs = [( ("General","title"),
             "\n"
             "\t*\t minecraft:ID DATA\n"
             "\t**\t id:\"minecraft:ID\",Damage:DATAs\n"
-            ,"label"),
+            "","label"),
             ("Sign facing determines [<y-rot> <x-rot>] for /tp",True),
-            ("Mode:",("Absolute Coordinates","Relative Coordinates")),
+            ("Coordinate Mode:",("Absolute","Relative")),
             ("","label"),
             ),
               
@@ -184,7 +184,7 @@ def perform(level, box, options):
     waypoints = []
     progress = options["Output progress to console"]
     facing = options["Sign facing determines [<y-rot> <x-rot>] for /tp"]
-    relative = True if options["Mode:"] == "Relative Coordinates" else False
+    relative = True if options["Coordinate Mode:"] == "Relative" else False
     
     for (chunk, _, _) in level.getChunkSlices(box):
         for t in chunk.TileEntities:
