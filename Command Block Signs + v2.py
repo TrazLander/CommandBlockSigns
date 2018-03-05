@@ -597,7 +597,7 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                     removeSigns(signsToMayRemove)
 
                 oldcommand = command
-                shortCoords = ",".join([str(int(average[0])), str(int(average[1])), str(int(average[2]))])
+                shortCoords = "x=" + str(int(average[0])) + ",y=" + str(int(average[1])) + ",z=" + str(int(average[2]))
                 command = replaceVariables(command, "#"+waypoint, shortCoords, sign)
                 if oldcommand != command:
                     removeSigns(signsToMayRemove)
@@ -719,8 +719,8 @@ def useLine(command, chunk, (x, y, z), (relative, sortedkeys, known, progress, f
                 shortCoords = "x="+str(int(sx))+",y="+str(int(sy))+",z="+str(int(sz))+",dx=0,dy=0,dz=0"
                 command = replaceVariables(command, "##"+waypoint, shortCoords, sign)
 
-                #do # directives ( X,Y,Z )
-                shortCoords = ",".join([str(int(sx)), str(int(sy)), str(int(sz))])
+                #do # directives ( x=X,y=Y,z=Z )
+                shortCoords = "x=" + str(int(sx)) + ",y=" + str(int(sy)) + ",z=" + str(int(sz))
                 command = replaceVariables(command, "#"+waypoint, shortCoords, sign)
 
                 #do % directives ( x:X,y:Y,z:Z )
